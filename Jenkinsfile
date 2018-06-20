@@ -37,6 +37,7 @@ node('master') {
     stage('Tests') {
         try {
             dir('tests/rest-assured') {
+                sh 'chmod -R 777 *'
                 sh './gradlew clean test'
             }
         } finally {
@@ -64,7 +65,7 @@ node('master') {
     }
 
     stage('Release') {
-        withMaven(maven: 'Maven 3') {
+        withMaven(maven: 'M3') {
             dir('app') {
                 releasedVersion = getReleasedVersion()
                 withCredentials([usernamePassword(credentialsId: 'github', passwordVariable: 'Mahender@0', usernameVariable: 'chilu49')]) {
