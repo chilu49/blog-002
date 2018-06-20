@@ -10,7 +10,7 @@ node('master') {
         parallel Checkout: {
             checkout scm
         }, 'Run Zalenium': {
-            dockerCmd '''run -d --name zalenium -p 4444:4444 \
+            dockerCmd '''run -d --rm --name zalenium -p 4444:4444 \
             -v /var/run/docker.sock:/var/run/docker.sock \
             --network="host" \
             --privileged dosel/zalenium:3.4.0a start --videoRecordingEnabled false --chromeContainers 1 --firefoxContainers 0'''
@@ -29,7 +29,7 @@ node('master') {
     stage('Deploy') {
         stage('Deploy') {
             dir('app') {
-                dockerCmd 'run -d -p 9999:9999 --name "snapshot" --network="host" automatingguy/sparktodo:SNAPSHOT'
+                dockerCmd 'run -d --rm -p 9999:9999 --name "snapshot" --network="host" automatingguy/sparktodo:SNAPSHOT'
             }
         }
     }
@@ -45,7 +45,7 @@ node('master') {
         }
 
         dockerCmd 'rm -f snapshot'
-        dockerCmd 'run -d -p 9999:9999 --name "snapshot" --network="host" automatingguy/sparktodo:SNAPSHOT'
+        dockerCmd 'run -d --rm -p 9999:9999 --name "snapshot" --network="host" automatingguy/sparktodo:SNAPSHOT'
 
         try {
             withMaven(maven: 'Maven 3') {
@@ -67,8 +67,8 @@ node('master') {
         withMaven(maven: 'Maven 3') {
             dir('app') {
                 releasedVersion = getReleasedVersion()
-                withCredentials([usernamePassword(credentialsId: 'github', passwordVariable: 'password', usernameVariable: 'username')]) {
-                    sh "git config user.email test@automatingguy.com && git config user.name Jenkins"
+                withCredentials([usernamePassword(credentialsId: 'github', passwordVariable: 'Mahender@0', usernameVariable: 'chilu49')]) {
+                    sh "git config user.email ravinder.unix@gmail.com && git config user.name chilu49"
                     sh "mvn release:prepare release:perform -Dusername=${username} -Dpassword=${password}"
                 }
                 dockerCmd "build --tag automatingguy/sparktodo:${releasedVersion} ."
